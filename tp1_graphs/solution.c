@@ -17,7 +17,7 @@ void print_list(Node* head){
 }
 
 Node* insert_end(Node* head, int data){
-	Node* new = (Node*)malloc(sizeof(Node*));
+	Node* new = (Node*)malloc(sizeof(Node));
 	if(new == NULL){
 		printf("Couldn't Allocate Mem...!");
 		exit(1);
@@ -33,7 +33,16 @@ Node* insert_end(Node* head, int data){
 
 Node* delete_pos(int pos); // will be leaving this one empty for now since we don't need it
 		
-
+void free_list(Node** lst, size_t a){
+	for(size_t i=0; i<a-1; i++){
+		Node* curr = lst[i];
+		while(curr != NULL){
+			Node* tmp = curr;
+			curr = curr->next;
+			free(tmp);
+		}
+	}
+}
 int main(){
 	int v;
 	printf("Enter the number of vertices in your graph:");
@@ -42,22 +51,21 @@ int main(){
 	// linked list.
 	// let's cross fingers for this one :)
 	
-	Node** adj_list = (Node**)malloc((sizeof(Node**)) * v);
-	if(adj_list == NULL){
-		printf("Couldn't Allocate Mem...!");
-		return 1;
-	}
+	Node* adj_list[v];
+
 	
 	for(size_t k =0; k<v; k++){
-		Node* a = (Node* )malloc(sizeof(Node*));
+		Node* a = (Node* )malloc(sizeof(Node));// this part caused a SEGMENTATION FAULT THAT  I HAD TO DEAL WITH FOR HOURS :(, i though i had it figured out
+						       // but i didnt.
 		if(a == NULL){
 			printf("Couldn't Allocate Mem...!");
 			return 1;
 		}
 		a->data = k+1;
+		a->next = NULL; // fixed after some random bug in the code...
 		adj_list[k] = a;
 	}
-	while(true){
+	while(1){
 
 		int a,b;
 		printf("Enter and edge in the graph from node 0 to node %d: ", v-1);
@@ -76,5 +84,8 @@ int main(){
 	for(size_t i=0; i<v; i++){
 		print_list(adj_list[i]);
 	}
+
+	// I FORGOT TO FREE MEMORY IN THIS PART.
+	free_list(adj_list, v);
 	return 0;
 }
